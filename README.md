@@ -11,7 +11,7 @@
 - XUnit
 
 - Sugestão:
-  - Implementar Job de verificação dos dados da Api Billing, Pode ser utilizado o Hangfire que tem suporte junto com Aspnetboilerplate
+  - Implementar Job de verificação dos dados da API Billing, Pode ser utilizado o Hangfire que tem suporte junto com Aspnetboilerplate
 
 ---
 
