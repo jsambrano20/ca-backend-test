@@ -23,7 +23,7 @@ Utilize o Docker para executar uma instância do SQL Server 2022. Você pode faz
 
 ```bash
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sua_senha_aqui" -p 1433:1433 --name sql_server_2022 -d mcr.microsoft.com/mssql/server:2022-latest
-
+```
 
 - `ACCEPT_EULA=Y`: Aceita o contrato de licença.
 - `SA_PASSWORD=sua_senha_aqui`: Define a senha do usuário `sa` do SQL Server. Substitua `sua_senha_aqui` pela senha desejada.
@@ -40,4 +40,12 @@ Certifique-se de que o contêiner está em execução usando `docker ps -a`.
 
 ```bash
    dotnet ef database update
+```
+
+Este comando aplica todas as migrações pendentes ao banco de dados configurado no projeto. Certifique-se de que seu arquivo `appsettings.json` (ou `appsettings.Development.json`) esteja configurado corretamente para se conectar ao banco de dados SQL Server.
+
+### Observações
+
+- Certifique-se de que todas as dependências do projeto estejam instaladas e configuradas corretamente, como o Entity Framework e o Aspnetboilerplate.
+- Se necessário, ajuste o connection string no arquivo de configuração do projeto para refletir as configurações corretas do SQL Server Docker (nome do servidor, porta, usuário, senha, etc.).
 
