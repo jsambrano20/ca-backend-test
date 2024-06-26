@@ -10,8 +10,8 @@
   - Sql Server 2022
 - XUnit
 
-*Sugestão:
-  *Implementar Job de verificação dos dados da Api Billing, Pode ser utilizado o Hangfire que tem suporte junto com Aspnetboilerplate
+- Sugestão:
+  - Implementar Job de verificação dos dados da Api Billing, Pode ser utilizado o Hangfire que tem suporte junto com Aspnetboilerplate
 
 ---
 
