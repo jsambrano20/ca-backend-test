@@ -116,5 +116,20 @@ namespace BackendTest.Controllers.Products
                 return StatusCode(500, $"Erro ao obter lista de faturamentos: {ex.Message}");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> ExportExcel()
+        {
+            try
+            {
+                var fileBytes = await _service.ExportBillingExcelAsync();
+
+                // Retorna o arquivo Excel como um arquivo para download
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"billings_{DateTime.Now}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao exportar para Excel: {ex.Message}");
+            }
+        }
     }
 }

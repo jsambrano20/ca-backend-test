@@ -19,6 +19,8 @@ namespace BackendTest.Services.Billings.Dto
         [JsonProperty("customer")] // Anotação para mapeamento do 
         public CustomerDto Customer { get; set; }
 
+        public Guid? CustomerId { get; set; }
+
         [JsonProperty("date")]
         public DateTime Date { get; set; }
 

@@ -21,5 +21,7 @@ namespace BackendTest.Services.Billings.Interfaces
         Task DeleteAsync(Guid id);
 
         Task<PagedResultDto<BillingDto>> CargaBillingAsync();
+
+        Task<byte[]> ExportBillingExcelAsync();
     }
 }

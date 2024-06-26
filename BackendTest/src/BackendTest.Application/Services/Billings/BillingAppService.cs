@@ -14,18 +14,24 @@ using System.Threading.Tasks;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Abp.EntityFrameworkCore.Repositories;
+using ClosedXML.Excel;
+using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BackendTest.Services.Billings
 {
-    public class BillingAppService : ApplicationService, IBillingAppService
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public class BillingAppService : BackendTestAppServiceBase, IBillingAppService
     {
         private readonly IRepository<Billing, Guid> _billingRepository;
+        private readonly IRepository<BillingLine, Guid> _billingLineRepository;
         private readonly IRepository<Customer, Guid> _customerRepository;
         private readonly IRepository<Product, Guid> _productRepository;
         private readonly BillingService _billingService;
 
         public BillingAppService(
             IRepository<Billing, Guid> billingRepository,
+            IRepository<BillingLine, Guid> billingLineRepository,
             IRepository<Customer, Guid> customerRepository,
             IRepository<Product, Guid> productRepository,
             BillingService billingService)
@@ -34,6 +40,7 @@ namespace BackendTest.Services.Billings
             _customerRepository = customerRepository;
             _productRepository = productRepository;
             _billingService = billingService;
+            _billingLineRepository = billingLineRepository;
         }
 
         /// <summary>
@@ -227,5 +234,83 @@ namespace BackendTest.Services.Billings
             var billing = await _billingRepository.GetAsync(id);
             await _billingRepository.DeleteAsync(billing);
         }
+
+        /// <summary>
+        /// Exporta os dados de faturamento para um arquivo Excel usando ClosedXML.
+        /// </summary>
+        /// <returns>Array de bytes contendo o arquivo Excel</returns>
+        public async Task<byte[]> ExportBillingExcelAsync()
+        {
+            // Obtém todos os dados de faturamento do banco de dados
+            var billings = await _billingRepository.GetAllListAsync();
+            var billingDtos = ObjectMapper.Map<List<BillingDto>>(billings);
+
+            // Cria um novo arquivo Excel utilizando a biblioteca ClosedXML
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Faturamento");
+
+                // Cabeçalhos das colunas
+                worksheet.Cell(1, 1).Value = "Número da Fatura";
+                worksheet.Cell(1, 2).Value = "Data da Fatura";
+                worksheet.Cell(1, 3).Value = "Data de Vencimento";
+                worksheet.Cell(1, 4).Value = "Cliente";
+                worksheet.Cell(1, 5).Value = "Valor Total";
+                worksheet.Cell(1, 6).Value = "Moeda";
+                worksheet.Cell(1, 7).Value = "Produtos";
+
+                // Preenche os dados
+                int row = 2;
+                foreach (var billingDto in billingDtos)
+                {
+                    var customer = new Customer();
+                    var lines = new List<BillingLine>();
+
+                    if (billingDto.CustomerId == null)
+                        continue;
+
+                    customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == billingDto.CustomerId.Value);
+
+                    if (customer == null)
+                    {
+                        // Lidar com o caso em que o cliente não é encontrado
+                        continue; // Pular para a próxima iteração se o cliente não for encontrado
+                    }
+
+                    var idbillingLines = Guid.Parse(billingDto.Id);
+                    lines = await _billingLineRepository.GetAllListAsync(bl => bl.BillingId == idbillingLines);
+                    var products = await _productRepository.GetAllListAsync();
+
+                    // Monta a string com os nomes dos produtos
+                    var productNames = lines.Select(line =>
+                    {
+                        var product = products.FirstOrDefault(p => p.Id == line.ProductId);
+                        return product != null ? product.Name : line.Description;
+                    });
+
+                    worksheet.Cell(row, 1).Value = billingDto.InvoiceNumber;
+                    worksheet.Cell(row, 2).Value = billingDto.Date.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 3).Value = billingDto.DueDate.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 4).Value = customer.Name;
+                    worksheet.Cell(row, 5).Value = billingDto.TotalAmount;
+                    worksheet.Cell(row, 6).Value = billingDto.Currency;
+                    worksheet.Cell(row, 7).Value = string.Join(", ", productNames);
+
+                    row++;
+                }
+
+                // Auto-ajusta as colunas para o conteúdo
+                worksheet.Columns().AdjustToContents();
+
+                // Salva o arquivo Excel como um array de bytes
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
+
     }
+
 }

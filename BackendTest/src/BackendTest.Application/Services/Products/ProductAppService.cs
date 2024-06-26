@@ -13,10 +13,12 @@ using System.Threading.Tasks;
 using Abp.UI;
 using BackendTest.Services.Products.Interfaces;
 using Abp.EntityFrameworkCore.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BackendTest.Services.Products
 {
-    public class ProductAppService : ApplicationService, IProductAppService
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public class ProductAppService : BackendTestAppServiceBase, IProductAppService
     {
         private readonly IRepository<Product, Guid> _repository;
         private readonly BillingService _billingService;

@@ -13,13 +13,12 @@ using Abp.UI;
 using BackendTest.Services.Billings.Dto;
 using BackendTest.Services.Customers.Interfaces;
 using Abp.EntityFrameworkCore.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BackendTest.Services.Customers
 {
-    /// <summary>
-    /// Serviço de aplicação para gerenciamento de clientes.
-    /// </summary>
-    public class CustomerAppService : ApplicationService, ICustomerAppService
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public class CustomerAppService : BackendTestAppServiceBase, ICustomerAppService
     {
         private readonly IRepository<Customer, Guid> _repository;
         private readonly BillingService _billingService; // Serviço de faturamento
@@ -70,6 +69,7 @@ namespace BackendTest.Services.Customers
                             var customer = new Customer
                             {
                                 // Verifica se o nome, email e endereço estão presentes; caso não estejam, utiliza "N/A"
+                                Id = Guid.Parse(billing.Customer.Id),
                                 Name = billing.Customer.Name ?? "N/A",
                                 Email = billing.Customer.Email ?? "N/A",
                                 Address = billing.Customer.Address ?? "N/A"
