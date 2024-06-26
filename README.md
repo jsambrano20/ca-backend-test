@@ -1,56 +1,45 @@
-**Teste para vaga de Desenvolvimento Back-end .NET**
----------------------
-Criar uma API REST para gerenciar faturamento de clientes.
----------------------
-**Funcionalidades 🛠️**
+## Teste para vaga de Desenvolvimento Back-end .NET
+---
 
-* Customer: CRUD; Criar um cadastro do cliente com os seguintes campos:
-    * Id;
-    * Name;
-    * Email;
-    * Address;
-    * **Todos os campos são de preenchimento obrigatório.**
-* Produtos: CRUD; Criar um cadastro de produtos com os seguintes campos:
-    * Id;
-    * Nome do produto;
-    * **Todos os campos são de preenchimento obrigatório.**
-* Controle de conferência e importação de billing.
-    * Utilizar postman para consulta dos dados da API’s para criação das tabelas de billing e billingLines.
-	  * Após consulta, e criação do passo anterior, inserir no banco de dados o primeiro registro do retorno da API de billing para criação de cliente e produto através do swagger ou dataseed.
+### Especificação 🛠️
 
-    * Utilizar as API’s para consumo dos dados a partir da aplicação que está criada e fazer as seguintes verificações:
-      * Se o cliente e o produto existirem, inserir o registro do billing e billingLines no DB local.
-      * Caso se o cliente existir ou só o produto existir, deve retornar um erro na aplicação informando sobre a criação do registro faltante.
-      * Criar exceptions tratando mal funcionamento ou interrupção de serviço quando API estiver fora.
-* Lista de API’s :
-	* Get https://65c3b12439055e7482c16bca.mockapi.io/api/v1/billing
-	* Get https://65c3b12439055e7482c16bca.mockapi.io/api/v1/billing/:id
-	* Post https://65c3b12439055e7482c16bca.mockapi.io/api/v1/billing
-	* Delete https://65c3b12439055e7482c16bca.mockapi.io/api/v1/billing/:id
-	* PUT https://65c3b12439055e7482c16bca.mockapi.io/api/v1/billing/:id
----------------------
-**Requisitos 💻**
+- Versão .NET: 8
+- Entity Framework
+- Aspnetboilerplate
+- Docker:
+  - Sql Server 2022
 
-* A aplicação deverá ser desenvolvida usando .NET a partir da versão 5+;
-* Modelagem de dados pode ser no banco de dados de sua preferência, podendo ser um banco relacional ou não relacional (mongodb, SQL Server, PostgreSQL, MySQL, etc);
-* Persistência de dados no banco deverá ser feita utilizando o Entity Framework Core;
-* O retorno da API deverá ser em formato JSON;
-* Utilizar as requisições GET, POST, PUT ou DELETE, conforme a melhor prática;
-* Criar o README do projeto descrevendo as tecnologias utilizadas, chamadas dos serviços e configurações necessário para executar a aplicação.
----------------------
-**Pontos Extras ⭐**
+---
 
-* Desenvolvimento baseado em TDD;
-* Práticas de modelagem de projeto;
-* Criar e configurar o Swagger da API de acordo com as melhores práticas;
-* Criar uma API para extração dos dados de faturamento.
-* Sugestões serão bem vindas.
----------------------
-**Submissão do teste 📝**
+### Configuração 💻
 
-Crie um fork do teste para acompanharmos o seu desenvolvimento através dos seus commits.
+#### Instalação do Docker
 
----------------------
-Obrigado!
+Certifique-se de ter o Docker instalado em sua máquina. Você pode baixá-lo e instalá-lo a partir do [site oficial do Docker](https://www.docker.com/get-started).
 
-Agradecemos sua participação no teste. Boa sorte! 😄
+#### Instalação do SQL Server 2022 via Docker
+
+Utilize o Docker para executar uma instância do SQL Server 2022. Você pode fazer isso executando o seguinte comando no terminal:
+
+```bash
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sua_senha_aqui" -p 1433:1433 --name sql_server_2022 -d mcr.microsoft.com/mssql/server:2022-latest
+exit
+```
+
+- `ACCEPT_EULA=Y`: Aceita o contrato de licença.
+- `SA_PASSWORD=sua_senha_aqui`: Define a senha do usuário `sa` do SQL Server. Substitua `sua_senha_aqui` pela senha desejada.
+- `1433:1433`: Mapeia a porta 1433 do host para a porta 1433 do contêiner Docker (porta padrão do SQL Server).
+
+Certifique-se de que o contêiner está em execução usando `docker ps -a`.
+
+### Configuração do Projeto .NET
+
+1. Clone ou baixe o projeto do repositório.
+2. Abra o projeto usando o Visual Studio ou qualquer editor de código de sua preferência que suporte .NET 8 e Entity Framework.
+3. Abra um terminal na raiz do projeto onde está localizado o arquivo `.csproj`.
+4. Execute o seguinte comando para aplicar as migrações e atualizar o banco de dados:
+
+```bash
+   dotnet ef database update
+exit
+```
