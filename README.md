@@ -23,8 +23,7 @@ Utilize o Docker para executar uma instância do SQL Server 2022. Você pode faz
 
 ```bash
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=sua_senha_aqui" -p 1433:1433 --name sql_server_2022 -d mcr.microsoft.com/mssql/server:2022-latest
-exit
-```
+
 
 - `ACCEPT_EULA=Y`: Aceita o contrato de licença.
 - `SA_PASSWORD=sua_senha_aqui`: Define a senha do usuário `sa` do SQL Server. Substitua `sua_senha_aqui` pela senha desejada.
@@ -41,5 +40,4 @@ Certifique-se de que o contêiner está em execução usando `docker ps -a`.
 
 ```bash
    dotnet ef database update
-exit
-```
+
