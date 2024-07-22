@@ -15,7 +15,11 @@ namespace BackendTest.Mapper
     {
         public BillingAutoMapperProfile()
         {
-            CreateMap<Billing, BillingDto>().ReverseMap();
+            CreateMap<Billing, BillingDto>()
+                //.ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ReverseMap()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<CreateBillingDto, Billing>().ReverseMap();
             CreateMap<UpdateBillingDto, Billing>().ReverseMap();
 

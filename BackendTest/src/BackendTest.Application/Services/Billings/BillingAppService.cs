@@ -98,7 +98,9 @@ namespace BackendTest.Services.Billings
                 {
                     // Mapeia o DTO para a entidade e adiciona à lista de inserções
                     var billing = ObjectMapper.Map<Billing>(billingDto);
-                    insertedBillings.Add(billing);
+
+                    if (!insertedBillings.Exists(x => x.InvoiceNumber.Equals(billing.InvoiceNumber)))
+                        insertedBillings.Add(billing);
                 }
                 else
                 {

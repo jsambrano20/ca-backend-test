@@ -14,6 +14,7 @@ using Abp.UI;
 using BackendTest.Services.Products.Interfaces;
 using Abp.EntityFrameworkCore.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace BackendTest.Services.Products
 {
@@ -41,6 +42,8 @@ namespace BackendTest.Services.Products
             {
                 // Obtém todos os produtos do banco de dados local
                 var products = await _repository.GetAllListAsync();
+                var productsToAdd = new List<Product>();
+
 
                 // Obtém os dados de faturamento externos usando o serviço BillingService
                 var billingDataResponse = await _billingService.GetBillingDataAsync();
@@ -55,7 +58,7 @@ namespace BackendTest.Services.Products
                     var billingsJsonData = JsonConvert.DeserializeObject<List<BillingDto>>(billingDataString);
 
                     // Lista para armazenar novos produtos a serem adicionados
-                    var productsToAdd = new List<Product>();
+                    productsToAdd = new List<Product>();
 
                     // Itera sobre cada faturamento recebido
                     foreach (var billing in billingsJsonData)
@@ -66,10 +69,10 @@ namespace BackendTest.Services.Products
                             // Itera sobre cada linha de produto no faturamento
                             foreach (var billingProduct in billing.Lines)
                             {
-                                // Verifica se já existe um produto com a mesma descrição no banco de dados local
-                                var existingProduct = products.FirstOrDefault(p => p.Description == billingProduct.Description);
+                                // Verifica se já existe um produto com o mesmo nome ou descrição no banco de dados local
+                                var existingProduct = products.FirstOrDefault(p => p.Name == billingProduct.Description || p.Description == billingProduct.Description);
 
-                                // Se não existir produto com a mesma descrição, cria um novo produto localmente
+                                // Se não existir produto com o mesmo nome ou descrição, cria um novo produto localmente
                                 if (existingProduct == null)
                                 {
                                     // Cria um novo objeto de produto com os dados da linha de faturamento
@@ -82,7 +85,8 @@ namespace BackendTest.Services.Products
                                     };
 
                                     // Adiciona o novo produto à lista de produtos a serem adicionados
-                                    productsToAdd.Add(newProduct);
+                                    if (!productsToAdd.Exists(x => x.Name.Equals(newProduct.Name)))
+                                        productsToAdd.Add(newProduct);
                                 }
                             }
                         }
@@ -104,10 +108,13 @@ namespace BackendTest.Services.Products
                 }
 
                 // Converte a lista de produtos do banco de dados para uma lista de ProductDto utilizando o ObjectMapper
-                var productDtos = ObjectMapper.Map<List<ProductDto>>(products);
+                var productDtos = ObjectMapper.Map<List<ProductDto>>(products.Count > 0 ? products : productsToAdd);
+
+                // Retorna count do productDtos
+                var count = products.Count > 0 ? products.Count : productsToAdd.Count;
 
                 // Retorna um PagedResultDto contendo os produtos mapeados e o total de produtos
-                return new PagedResultDto<ProductDto>(products.Count, productDtos);
+                return new PagedResultDto<ProductDto>(count, productDtos);
             }
             catch (Exception ex)
             {

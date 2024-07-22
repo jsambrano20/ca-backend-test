@@ -83,7 +83,8 @@ namespace BackendTest.Services.Customers
                             }
 
                             // Adiciona o novo cliente à lista de clientes a serem adicionados
-                            customersToAdd.Add(customer);
+                            if (!customersToAdd.Exists(x => x.Name.Equals(customer.Name)))
+                                customersToAdd.Add(customer);
                         }
                     }
                 }
